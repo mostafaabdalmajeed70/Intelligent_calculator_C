@@ -8,6 +8,9 @@
 #define MAX_STACK 100
 #define PI 3.14159265358979
 #define GRAVITY 9.80665
+#define COULOMB_K 8.99e9
+#define GRAVITY_CONST 6.674e-11
+#define PLANCK 6.626e-34
 
 // ==================== STRUCTURES ====================
 
@@ -294,21 +297,235 @@ void solvePower() {
     else printf("Error: time cannot be zero\n");
 }
 
+void solveTotalEnergy() {
+    double m, v, h;
+    printf("Enter mass (kg): ");
+    scanf("%lf", &m);
+    printf("Enter velocity (m/s): ");
+    scanf("%lf", &v);
+    printf("Enter height (m): ");
+    scanf("%lf", &h);
+    clearBuffer();
+    
+    double ke = 0.5 * m * v * v;
+    double pe = m * GRAVITY * h;
+    double total = ke + pe;
+    
+    printf("Kinetic Energy = %lf J\n", ke);
+    printf("Potential Energy = %lf J\n", pe);
+    printf("Total Mechanical Energy = %lf J\n", total);
+}
+
+void solveFinalVelocity() {
+    double v_i, a, t;
+    printf("Enter initial velocity (m/s): ");
+    scanf("%lf", &v_i);
+    printf("Enter acceleration (m/s²): ");
+    scanf("%lf", &a);
+    printf("Enter time (s): ");
+    scanf("%lf", &t);
+    clearBuffer();
+    
+    double v_f = v_i + a * t;
+    printf("Final Velocity = %lf m/s\n", v_f);
+}
+
+void solveDisplacement() {
+    double v_i, a, t;
+    printf("Enter initial velocity (m/s): ");
+    scanf("%lf", &v_i);
+    printf("Enter acceleration (m/s²): ");
+    scanf("%lf", &a);
+    printf("Enter time (s): ");
+    scanf("%lf", &t);
+    clearBuffer();
+    
+    double s = v_i * t + 0.5 * a * t * t;
+    printf("Displacement = %lf m\n", s);
+}
+
+void solveCoulombForce() {
+    double q1, q2, r;
+    printf("Enter charge 1 (C): ");
+    scanf("%lf", &q1);
+    printf("Enter charge 2 (C): ");
+    scanf("%lf", &q2);
+    printf("Enter distance (m): ");
+    scanf("%lf", &r);
+    clearBuffer();
+    
+    if (r != 0) {
+        double f = COULOMB_K * (q1 * q2) / (r * r);
+        printf("Coulomb Force = %lf N\n", f);
+    } else {
+        printf("Error: distance cannot be zero\n");
+    }
+}
+
+void solveResistance() {
+    double rho, length, area;
+    printf("Enter resistivity (Ohm·m): ");
+    scanf("%lf", &rho);
+    printf("Enter length (m): ");
+    scanf("%lf", &length);
+    printf("Enter cross-sectional area (m²): ");
+    scanf("%lf", &area);
+    clearBuffer();
+    
+    if (area != 0) {
+        double r = rho * length / area;
+        printf("Resistance = %lf Ohm\n", r);
+    } else {
+        printf("Error: area cannot be zero\n");
+    }
+}
+
+void solveElectricalEnergy() {
+    double v, i, t;
+    printf("Enter voltage (V): ");
+    scanf("%lf", &v);
+    printf("Enter current (A): ");
+    scanf("%lf", &i);
+    printf("Enter time (s): ");
+    scanf("%lf", &t);
+    clearBuffer();
+    
+    double energy = v * i * t;
+    printf("Electrical Energy = %lf J\n", energy);
+}
+
+void solveCentripetal() {
+    double v, r;
+    printf("Enter velocity (m/s): ");
+    scanf("%lf", &v);
+    printf("Enter radius (m): ");
+    scanf("%lf", &r);
+    clearBuffer();
+    
+    if (r != 0) {
+        double a_c = (v * v) / r;
+        printf("Centripetal Acceleration = %lf m/s²\n", a_c);
+    } else {
+        printf("Error: radius cannot be zero\n");
+    }
+}
+
+void solveCentripetalForce() {
+    double m, v, r;
+    printf("Enter mass (kg): ");
+    scanf("%lf", &m);
+    printf("Enter velocity (m/s): ");
+    scanf("%lf", &v);
+    printf("Enter radius (m): ");
+    scanf("%lf", &r);
+    clearBuffer();
+    
+    if (r != 0) {
+        double f_c = m * (v * v) / r;
+        printf("Centripetal Force = %lf N\n", f_c);
+    } else {
+        printf("Error: radius cannot be zero\n");
+    }
+}
+
+void solveGravitationalForce() {
+    double m1, m2, r;
+    printf("Enter mass 1 (kg): ");
+    scanf("%lf", &m1);
+    printf("Enter mass 2 (kg): ");
+    scanf("%lf", &m2);
+    printf("Enter distance (m): ");
+    scanf("%lf", &r);
+    clearBuffer();
+    
+    if (r != 0) {
+        double f = GRAVITY_CONST * (m1 * m2) / (r * r);
+        printf("Gravitational Force = %lf N\n", f);
+    } else {
+        printf("Error: distance cannot be zero\n");
+    }
+}
+
+void solveWaveVelocity() {
+    double f, lambda;
+    printf("Enter frequency (Hz): ");
+    scanf("%lf", &f);
+    printf("Enter wavelength (m): ");
+    scanf("%lf", &lambda);
+    clearBuffer();
+    
+    double v = f * lambda;
+    printf("Wave Velocity = %lf m/s\n", v);
+}
+
+void solvePhotonEnergy() {
+    double f;
+    printf("Enter frequency (Hz): ");
+    scanf("%lf", &f);
+    clearBuffer();
+    
+    double energy = PLANCK * f;
+    printf("Photon Energy = %lf J\n", energy);
+}
+
+void solvePressure() {
+    double f, a;
+    printf("Enter force (N): ");
+    scanf("%lf", &f);
+    printf("Enter area (m²): ");
+    scanf("%lf", &a);
+    clearBuffer();
+    
+    if (a != 0) {
+        double p = f / a;
+        printf("Pressure = %lf Pa\n", p);
+    } else {
+        printf("Error: area cannot be zero\n");
+    }
+}
+
+void solveDynamicPower() {
+    double f, v, angle;
+    printf("Enter force (N): ");
+    scanf("%lf", &f);
+    printf("Enter velocity (m/s): ");
+    scanf("%lf", &v);
+    printf("Enter angle (degrees): ");
+    scanf("%lf", &angle);
+    clearBuffer();
+    
+    double p = f * v * cos(angle * PI / 180);
+    printf("Power = %lf W\n", p);
+}
+
 void physicsEquations() {
     int choice;
     char cont;
     
     do {
         printf("\n=== Physics Equations ===\n");
-        printf("1) Newton's Second Law    F = m * a\n");
-        printf("2) Kinetic Energy         KE = 0.5 * m * v^2\n");
-        printf("3) Ohm's Law              V = I * R\n");
-        printf("4) Potential Energy       PE = m * g * h\n");
-        printf("5) Velocity               v = d / t\n");
-        printf("6) Momentum               p = m * v\n");
-        printf("7) Work                   W = F * d * cos(angle)\n");
-        printf("8) Power                  P = W / t\n");
-        printf("9) Back to main menu\n");
+        printf("1) Newton's Second Law       (F = m*a)\n");
+        printf("2) Kinetic Energy            (KE = 0.5*m*v²)\n");
+        printf("3) Ohm's Law                 (V = I*R)\n");
+        printf("4) Potential Energy          (PE = m*g*h)\n");
+        printf("5) Velocity                  (v = d/t)\n");
+        printf("6) Momentum                  (p = m*v)\n");
+        printf("7) Work                      (W = F*d*cos(θ))\n");
+        printf("8) Power                     (P = W/t)\n");
+        printf("9) Total Mechanical Energy   (E = KE + PE)\n");
+        printf("10) Final Velocity           (v_f = v_i + a*t)\n");
+        printf("11) Displacement             (s = v_i*t + 0.5*a*t²)\n");
+        printf("12) Coulomb's Law            (F = k*q1*q2/r²)\n");
+        printf("13) Electrical Resistance    (R = ρ*L/A)\n");
+        printf("14) Electrical Energy        (E = V*I*t)\n");
+        printf("15) Centripetal Acceleration (a = v²/r)\n");
+        printf("16) Centripetal Force        (F = m*v²/r)\n");
+        printf("17) Gravitational Force      (F = G*m1*m2/r²)\n");
+        printf("18) Wave Velocity            (v = f*λ)\n");
+        printf("19) Photon Energy            (E = h*f)\n");
+        printf("20) Pressure                 (P = F/A)\n");
+        printf("21) Dynamic Power            (P = F*v*cos(θ))\n");
+        printf("22) Back to main menu\n");
         printf("Choice: ");
         scanf("%d", &choice);
         clearBuffer();
@@ -322,7 +539,20 @@ void physicsEquations() {
             case 6: solveMomentum(); break;
             case 7: solveWork(); break;
             case 8: solvePower(); break;
-            case 9: return;
+            case 9: solveTotalEnergy(); break;
+            case 10: solveFinalVelocity(); break;
+            case 11: solveDisplacement(); break;
+            case 12: solveCoulombForce(); break;
+            case 13: solveResistance(); break;
+            case 14: solveElectricalEnergy(); break;
+            case 15: solveCentripetal(); break;
+            case 16: solveCentripetalForce(); break;
+            case 17: solveGravitationalForce(); break;
+            case 18: solveWaveVelocity(); break;
+            case 19: solvePhotonEnergy(); break;
+            case 20: solvePressure(); break;
+            case 21: solveDynamicPower(); break;
+            case 22: return;
         }
         
         printf("Continue? (y/n): ");
