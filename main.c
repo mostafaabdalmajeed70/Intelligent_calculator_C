@@ -331,84 +331,216 @@ void physicsEquations() {
     } while (cont == 'y' || cont == 'Y');
 }
 
-// ==================== SECTION 3: LINEAR & QUADRATIC EQUATIONS ====================
+// ==================== SECTION 3: SMART EQUATION SOLVER ====================
 
-void solveLinear() {
-    double a, b;
-    printf("Equation: ax + b = 0\n");
-    printf("Enter a: ");
-    scanf("%lf", &a);
-    printf("Enter b: ");
-    scanf("%lf", &b);
-    clearBuffer();
+double extractCoefficient(char *term, int len) {
+    char coef[32];
+    int i = 0, j = 0;
+    int sign = 1;
     
-    if (a == 0) {
-        if (b == 0) printf("Infinite solutions\n");
-        else printf("No solution\n");
-    } else {
-        printf("x = %lf\n", -b / a);
+    while (i < len && isspace(term[i])) i++;
+    
+    if (term[i] == '-') { sign = -1; i++; }
+    else if (term[i] == '+') { i++; }
+    
+    while (i < len && isspace(term[i])) i++;
+    
+    while (i < len && (isdigit(term[i]) || term[i] == '.')) {
+        coef[j++] = term[i++];
     }
+    coef[j] = '\0';
+    
+    if (j == 0) return sign * 1.0;
+    return sign * atof(coef);
 }
 
-void solveQuadratic() {
-    double a, b, c, disc, x1, x2;
-    printf("Equation: ax^2 + bx + c = 0\n");
-    printf("Enter a: ");
-    scanf("%lf", &a);
-    printf("Enter b: ");
-    scanf("%lf", &b);
-    printf("Enter c: ");
-    scanf("%lf", &c);
-    clearBuffer();
+void parseEquation(char *equation, double *a, double *b, double *c, double *d, int *degree) {
+    char left[MAX_EXPR], right[MAX_EXPR];
+    char *eq_sign;
+    int i, len;
+    double rightVal = 0;
     
-    if (a == 0) {
-        if (b != 0) printf("x = %lf\n", -c / b);
-        else printf("Invalid equation\n");
-        return;
+    *a = 0; *b = 0; *c = 0; *d = 0; *degree = 0;
+    
+    eq_sign = strchr(equation, '=');
+    if (eq_sign) {
+        len = eq_sign - equation;
+        strncpy(left, equation, len);
+        left[len] = '\0';
+        strcpy(right, eq_sign + 1);
+        rightVal = atof(right);
+    } else {
+        strcpy(left, equation);
     }
     
-    disc = b * b - 4 * a * c;
+    len = strlen(left);
+    i = 0;
+    
+    while (i < len) {
+        while (i < len && isspace(left[i])) i++;
+        if (i >= len) break;
+        
+        int termStart = i;
+        int sign = 1;
+        
+        if (left[i] == '+') { sign = 1; i++; }
+        else if (left[i] == '-') { sign = -1; i++; }
+        
+        while (i < len && isspace(left[i])) i++;
+        
+        double coef = 0;
+        int hasCoef = 0;
+        
+        while (i < len && (isdigit(left[i]) || left[i] == '.')) {
+            if (!hasCoef) coef = 0;
+            hasCoef = 1;
+            if (left[i] == '.') {
+                i++;
+                double decimal = 0.1;
+                while (i < len && isdigit(left[i])) {
+                    coef += (left[i] - '0') * decimal;
+                    decimal *= 0.1;
+                    i++;
+                }
+            } else {
+                coef = coef * 10 + (left[i] - '0');
+                i++;
+            }
+        }
+        
+        if (!hasCoef) coef = 1;
+        coef *= sign;
+        
+        while (i < len && isspace(left[i])) i++;
+        
+        if (i < len && (left[i] == 'x' || left[i] == 'X')) {
+            i++;
+            while (i < len && isspace(left[i])) i++;
+            
+            if (i < len && left[i] == '^') {
+                i++;
+                while (i < len && isspace(left[i])) i++;
+                
+                int exp = 0;
+                while (i < len && isdigit(left[i])) {
+                    exp = exp * 10 + (left[i] - '0');
+                    i++;
+                }
+                
+                if (exp == 3) { *a += coef; if (*degree < 3) *degree = 3; }
+                else if (exp == 2) { *b += coef; if (*degree < 2) *degree = 2; }
+                else if (exp == 1) { *c += coef; if (*degree < 1) *degree = 1; }
+            } else {
+                *c += coef;
+                if (*degree < 1) *degree = 1;
+            }
+        } else {
+            *d += coef;
+        }
+    }
+    
+    *d -= rightVal;
+}
+
+void solveCubicEquation(double a, double b, double c, double d) {
+    double p, q, disc;
+    double b_a = b / a, c_a = c / a, d_a = d / a;
+    
+    p = c_a - (b_a * b_a) / 3.0;
+    q = d_a - (b_a * c_a) / 3.0 + (2.0 * b_a * b_a * b_a) / 27.0;
+    
+    disc = (q * q) / 4.0 + (p * p * p) / 27.0;
+    
     printf("Discriminant = %lf\n", disc);
     
     if (disc > 0) {
-        x1 = (-b + sqrt(disc)) / (2 * a);
-        x2 = (-b - sqrt(disc)) / (2 * a);
+        double u = cbrt(-q/2.0 + sqrt(disc));
+        double v = cbrt(-q/2.0 - sqrt(disc));
+        double x1 = u + v - b_a/3.0;
+        printf("One real root: x = %lf\n", x1);
+    } else if (disc == 0) {
+        double u = cbrt(-q/2.0);
+        double x1 = 2*u - b_a/3.0;
+        double x2 = -u - b_a/3.0;
+        printf("Three real roots (two equal): x1 = %lf, x2 = x3 = %lf\n", x1, x2);
+    } else {
+        double r = sqrt(-(p*p*p)/27.0);
+        double theta = acos(-q/(2.0*r));
+        double m = 2.0 * cbrt(r);
+        
+        double x1 = m * cos(theta/3.0) - b_a/3.0;
+        double x2 = m * cos((theta + 2.0*PI)/3.0) - b_a/3.0;
+        double x3 = m * cos((theta + 4.0*PI)/3.0) - b_a/3.0;
+        printf("Three real roots: x1 = %lf, x2 = %lf, x3 = %lf\n", x1, x2, x3);
+    }
+}
+
+void solveQuadraticEquation(double a, double b, double c) {
+    double disc = b*b - 4*a*c;
+    printf("Discriminant = %lf\n", disc);
+    
+    if (disc > 0) {
+        double x1 = (-b + sqrt(disc)) / (2*a);
+        double x2 = (-b - sqrt(disc)) / (2*a);
         printf("Two real roots: x1 = %lf, x2 = %lf\n", x1, x2);
     } else if (disc == 0) {
-        x1 = -b / (2 * a);
-        printf("One repeated root: x = %lf\n", x1);
+        printf("One repeated root: x = %lf\n", -b/(2*a));
     } else {
-        double real = -b / (2 * a);
-        double imag = sqrt(-disc) / (2 * a);
+        double real = -b / (2*a);
+        double imag = sqrt(-disc) / (2*a);
         printf("Complex roots: x1 = %lf + %lfi, x2 = %lf - %lfi\n", real, imag, real, imag);
     }
 }
 
-void equationsSolver() {
-    int choice;
+void solveLinearEquation(double a, double b) {
+    if (a == 0) {
+        if (b == 0) printf("Infinite solutions (identity)\n");
+        else printf("No solution (contradiction)\n");
+    } else {
+        printf("x = %lf\n", -b/a);
+    }
+}
+
+void smartEquationSolver() {
+    char equation[MAX_EXPR];
     char cont;
+    double a, b, c, d;
+    int degree;
     
     do {
-        printf("\n=== Linear & Quadratic Equations ===\n");
-        printf("1) Linear equation (ax + b = 0)\n");
-        printf("2) Quadratic equation (ax^2 + bx + c = 0)\n");
-        printf("3) Back to main menu\n");
-        printf("Choice: ");
-        scanf("%d", &choice);
-        clearBuffer();
+        printf("\n=== Smart Equation Solver ===\n");
+        printf("Enter equation (examples: 2x+3=0, x^2-4x+3=0, x^3-6x^2+11x-6=0)\n");
+        printf("Equation: ");
+        fgets(equation, MAX_EXPR, stdin);
+        equation[strcspn(equation, "\n")] = '\0';
         
-        switch (choice) {
-            case 1: solveLinear(); break;
-            case 2: solveQuadratic(); break;
-            case 3: return;
+        if (strlen(equation) == 0) continue;
+        
+        parseEquation(equation, &a, &b, &c, &d, &degree);
+        
+        printf("\nParsed equation:\n");
+        if (degree == 3) {
+            printf("Cubic: %.2lfx^3 + %.2lfx^2 + %.2lfx + %.2lf = 0\n", a, b, c, d);
+            printf("Type: Cubic Equation (Degree 3)\n\n");
+            solveCubicEquation(a, b, c, d);
+        } else if (degree == 2) {
+            printf("Quadratic: %.2lfx^2 + %.2lfx + %.2lf = 0\n", b, c, d);
+            printf("Type: Quadratic Equation (Degree 2)\n\n");
+            solveQuadraticEquation(b, c, d);
+        } else if (degree == 1) {
+            printf("Linear: %.2lfx + %.2lf = 0\n", c, d);
+            printf("Type: Linear Equation (Degree 1)\n\n");
+            solveLinearEquation(c, d);
+        } else {
+            if (d == 0) printf("Identity: 0 = 0 (Infinite solutions)\n");
+            else printf("Contradiction: %.2lf = 0 (No solution)\n", d);
         }
         
-        printf("Continue? (y/n): ");
+        printf("\nContinue? (y/n): ");
         scanf(" %c", &cont);
         clearBuffer();
     } while (cont == 'y' || cont == 'Y');
 }
-
 // ==================== SECTION 4: NUMBER SYSTEM CONVERSIONS ====================
 
 void decToBin(int dec) {
@@ -557,7 +689,7 @@ int main() {
         switch (choice) {
             case 1: expressionCalculator(); break;
             case 2: physicsEquations(); break;
-            case 3: equationsSolver(); break;
+            case 3: smartEquationSolver(); break;
             case 4: numberConversions(); break;
             case 5: printf("Goodbye!\n"); break;
             default: printf("Invalid choice\n");
