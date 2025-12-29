@@ -531,27 +531,27 @@ void physicsEquations() {
         clearBuffer();
         
         switch (choice) {
-            case 1: solveNewton(); break;
-            case 2: solveKineticEnergy(); break;
-            case 3: solveOhm(); break;
-            case 4: solvePotentialEnergy(); break;
-            case 5: solveVelocity(); break;
-            case 6: solveMomentum(); break;
-            case 7: solveWork(); break;
-            case 8: solvePower(); break;
-            case 9: solveTotalEnergy(); break;
-            case 10: solveFinalVelocity(); break;
-            case 11: solveDisplacement(); break;
-            case 12: solveCoulombForce(); break;
-            case 13: solveResistance(); break;
-            case 14: solveElectricalEnergy(); break;
-            case 15: solveCentripetal(); break;
-            case 16: solveCentripetalForce(); break;
+            case 1: solveNewton();              break;
+            case 2: solveKineticEnergy();       break;
+            case 3: solveOhm();                 break;
+            case 4: solvePotentialEnergy();     break;
+            case 5: solveVelocity();            break;
+            case 6: solveMomentum();            break;
+            case 7: solveWork();                break;
+            case 8: solvePower();               break;
+            case 9: solveTotalEnergy();         break;
+            case 10: solveFinalVelocity();      break;
+            case 11: solveDisplacement();       break;
+            case 12: solveCoulombForce();       break;
+            case 13: solveResistance();         break;
+            case 14: solveElectricalEnergy();   break;
+            case 15: solveCentripetal();        break;
+            case 16: solveCentripetalForce();   break;
             case 17: solveGravitationalForce(); break;
-            case 18: solveWaveVelocity(); break;
-            case 19: solvePhotonEnergy(); break;
-            case 20: solvePressure(); break;
-            case 21: solveDynamicPower(); break;
+            case 18: solveWaveVelocity();       break;
+            case 19: solvePhotonEnergy();       break;
+            case 20: solvePressure();           break;
+            case 21: solveDynamicPower();       break;
             case 22: return;
         }
         
